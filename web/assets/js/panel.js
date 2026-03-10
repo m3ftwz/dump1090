@@ -1,6 +1,7 @@
 import { copyText } from './lib/utils.js';
 import { copyIcon, checkIcon } from './lib/icons.js';
 import { getEmitterCategoryLabel } from './aircraft.js';
+import { loadPanelPosition, savePanelPosition } from './lib/storage.js';
 
 const defaultAircraftInfoText = 'Select an aircraft to view details';
 const copyButtonFadeDurationMs = 120;
@@ -219,14 +220,83 @@ export function initPanel({ onClearSelection }) {
     // Draggable info panel via pointer events.
     // The header acts as the drag handle. Pointer capture ensures moves
     // are tracked even when the cursor leaves the header bounds.
-    // Panel position is accumulated in data-x / data-y and applied via
-    // CSS transform so the panel's original layout position is preserved.
+    // Panel position is tracked via panelX / panelY closure variables
+    // and applied as a CSS transform so the layout position is preserved.
     const header = infoPanel.querySelector('.info-panel__header');
     let dragPointerId = null;
     let dragStartX = 0;
     let dragStartY = 0;
     let panelStartX = 0;
     let panelStartY = 0;
+    let panelX = 0;
+    let panelY = 0;
+
+    // Cached during drag to avoid repeated getBoundingClientRect() calls.
+    let clampMinX = 0;
+    let clampMaxX = 0;
+    let clampMinY = 0;
+    let clampMaxY = 0;
+
+    /**
+     * Computes clamping bounds from the current viewport and panel size.
+     *
+     * @returns {void}
+     */
+    function updateClampBounds() {
+        const rect = infoPanel.getBoundingClientRect();
+        const baseLeft = rect.left - panelX;
+        const baseTop = rect.top - panelY;
+        clampMinX = -baseLeft;
+        clampMaxX = window.innerWidth - baseLeft - rect.width;
+        clampMinY = -baseTop;
+        clampMaxY = window.innerHeight - baseTop - rect.height;
+    }
+
+    /**
+     * Clamps an x/y offset so the panel stays within the viewport.
+     *
+     * @param {number} x
+     * @param {number} y
+     * @returns {{x: number, y: number}}
+     */
+    function clampPosition(x, y) {
+        return {
+            x: Math.max(clampMinX, Math.min(clampMaxX, x)),
+            y: Math.max(clampMinY, Math.min(clampMaxY, y))
+        };
+    }
+
+    /**
+     * Applies a translate offset to the panel.
+     *
+     * @param {number} x
+     * @param {number} y
+     * @returns {void}
+     */
+    function applyPosition(x, y) {
+        const clamped = clampPosition(x, y);
+        panelX = clamped.x;
+        panelY = clamped.y;
+        infoPanel.style.transform = `translate(${panelX}px, ${panelY}px)`;
+    }
+
+    /**
+     * Ends the current drag, persists position, and restores body styles.
+     *
+     * @returns {void}
+     */
+    function endDrag() {
+        dragPointerId = null;
+        header.style.cursor = '';
+        document.body.style.cursor = '';
+        document.body.style.userSelect = '';
+        savePanelPosition(panelX, panelY);
+    }
+
+    // Restore persisted panel position.
+    const savedPosition = loadPanelPosition();
+    updateClampBounds();
+    applyPosition(savedPosition.x, savedPosition.y);
 
     // Record the pointer and the panel's current offset when a drag begins.
     header.addEventListener('pointerdown', (event) => {
@@ -236,8 +306,12 @@ export function initPanel({ onClearSelection }) {
         header.setPointerCapture(event.pointerId);
         dragStartX = event.clientX;
         dragStartY = event.clientY;
-        panelStartX = parseFloat(infoPanel.dataset.x) || 0;
-        panelStartY = parseFloat(infoPanel.dataset.y) || 0;
+        panelStartX = panelX;
+        panelStartY = panelY;
+        updateClampBounds();
+        header.style.cursor = 'grabbing';
+        document.body.style.cursor = 'grabbing';
+        document.body.style.userSelect = 'none';
     });
 
     // Move the panel by the delta between the current and starting pointer position.
@@ -245,15 +319,29 @@ export function initPanel({ onClearSelection }) {
         if (event.pointerId !== dragPointerId) return;
         const x = panelStartX + (event.clientX - dragStartX);
         const y = panelStartY + (event.clientY - dragStartY);
-        infoPanel.style.transform = `translate(${x}px, ${y}px)`;
-        infoPanel.dataset.x = x;
-        infoPanel.dataset.y = y;
+        applyPosition(x, y);
     });
 
-    // Release the drag on pointer up.
+    // Release the drag on pointer up or cancel.
     header.addEventListener('pointerup', (event) => {
         if (event.pointerId !== dragPointerId) return;
-        dragPointerId = null;
+        endDrag();
+    });
+
+    header.addEventListener('pointercancel', (event) => {
+        if (event.pointerId !== dragPointerId) return;
+        endDrag();
+    });
+
+    // Nudge the panel back into view when the window is resized.
+    let resizeTimer = null;
+    addEventListener('resize', () => {
+        clearTimeout(resizeTimer);
+        resizeTimer = setTimeout(() => {
+            updateClampBounds();
+            applyPosition(panelX, panelY);
+            savePanelPosition(panelX, panelY);
+        }, 100);
     });
 
     // Handle copy buttons on label hover
