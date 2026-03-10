@@ -2595,12 +2595,18 @@ char *aircraftsToJson(int *len) {
         }
 
         if (a->lat != 0 && a->lon != 0) {
+            /* Keep the coarse aircraft_type field for backward
+             * compatibility while also providing the full A0..D7
+             * emitter_category. */
+            int aircraft_type = a->emitter_category >> 3;
+
             l = snprintf(p,buflen,
                 "{\"hex\":\"%s\", \"flight\":\"%s\", \"lat\":%f, "
                 "\"lon\":%f, \"altitude\":%d, \"track\":%d, "
-                "\"speed\":%d, \"emitter_category\":%d},\n",
+                "\"speed\":%d, \"aircraft_type\":%d, "
+                "\"emitter_category\":%d},\n",
                 a->hexaddr, a->flight, a->lat, a->lon, altitude, a->track,
-                speed, a->emitter_category);
+                speed, aircraft_type, a->emitter_category);
             p += l; buflen -= l;
             /* Resize if needed. */
             if (buflen < 256) {
