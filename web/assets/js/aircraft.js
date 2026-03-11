@@ -36,21 +36,28 @@ function shouldRotate(emitterCategory) {
 }
 
 /* ADS-B emitter category labels keyed by the flattened emitter_category value
- * produced by the backend. Values 0..31 map directly to D0..D7, C0..C7,
- * B0..B7, A0..A7 in order because ADS-B type codes 1..4 correspond to
- * category sets D..A.
+ * produced by the backend. Values 0..31 map directly to A0..A7, B0..B7,
+ * C0..C7, D0..D7 in order.
  *
  * Public reference:
  * FAA AC 20-165B Appendix tables:
  * https://www.faa.gov/documentLibrary/media/Advisory_Circular/AC_20-165B.pdf */
 const emitterCategoryLabels = [
     'No Emitter Category',
-    'Reserved',
-    'Reserved',
-    'Reserved',
-    'Reserved',
-    'Reserved',
-    'Reserved',
+    'Light Airplane',
+    'Small Airplane',
+    'Large Airplane',
+    'High Vortex Aircraft',
+    'Heavy Airplane',
+    'High Performance Aircraft',
+    'Rotorcraft',
+    'No Emitter Category',
+    'Glider or sailplane',
+    'Lighter Than Air',
+    'Parachute / Sky Diver',
+    'Ultralight Vehicle',
+    'UAV',
+    'Space/Trans-atmospheric Vehicle',
     'Reserved',
     'No Emitter Category',
     'Surface Vehicle—Emergency Vehicle',
@@ -61,21 +68,13 @@ const emitterCategoryLabels = [
     'Reserved',
     'Reserved',
     'No Emitter Category',
-    'Glider or sailplane',
-    'Lighter Than Air',
-    'Parachute / Sky Diver',
-    'Ultralight Vehicle',
-    'UAV',
-    'Space/Trans-atmospheric Vehicle',
     'Reserved',
-    'No Emitter Category',
-    'Light Airplane',
-    'Small Airplane',
-    'Large Airplane',
-    'High Vortex Aircraft',
-    'Heavy Airplane',
-    'High Performance Aircraft',
-    'Rotorcraft'
+    'Reserved',
+    'Reserved',
+    'Reserved',
+    'Reserved',
+    'Reserved',
+    'Reserved'
 ];
 
 /**
