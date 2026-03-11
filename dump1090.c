@@ -2251,7 +2251,7 @@ void interactiveShowData(void) {
 
     printf("\x1b[H\x1b[2J");    /* Clear the screen */
     printf(
-"Hex    Flight   Altitude  Speed   Lat       Lon       Track  Messages Seen %s\n"
+"Hex    Flight   Altitude  GndSpd  Lat       Lon       Track  Messages Seen %s\n"
 "--------------------------------------------------------------------------------\n",
         progress);
 

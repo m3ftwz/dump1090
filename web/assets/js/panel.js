@@ -176,7 +176,7 @@ export function initPanel({ onClearSelection }) {
                 </div>
                 <div class="info-panel__item">
                     <div class="info-panel__label-row">
-                        <span class="info-panel__label">Speed</span>
+                        <span class="info-panel__label">Ground Speed</span>
                         <button type="button" class="info-panel__copy-button"
                             data-copy-for="speed" aria-label="Copy value" title="Copy">
                             ${copyIcon}
