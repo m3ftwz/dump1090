@@ -1302,7 +1302,7 @@ void decodeModesMessage(struct modesMessage *mm, unsigned char *msg) {
 
         if (mm->metype >= 1 && mm->metype <= 4) {
             /* Aircraft Identification and Category */
-            mm->emitter_category = ((mm->metype - 1) << 3) | (msg[4] & 7);
+            mm->emitter_category = ((4 - mm->metype) << 3) | (msg[4] & 7);
             mm->flight[0] = ais_charset[msg[5]>>2];
             mm->flight[1] = ais_charset[((msg[5]&3)<<4)|(msg[6]>>4)];
             mm->flight[2] = ais_charset[((msg[6]&15)<<2)|(msg[7]>>6)];

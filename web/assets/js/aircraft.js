@@ -5,21 +5,23 @@ import {
 
 // Marker icons keyed by ADS-B emitter category. Unlisted categories fall back to jet.
 const markerIcons = {
-    1: propSingle,      // Light Airplane
-    2: propTwin,        // Small Airplane
-    5: jetHeavy,        // Heavy Airplane
-    6: jetPrivate,      // High Performance Aircraft
-    7: helicopter,      // Rotorcraft
-    9: glider,          // Glider or Sailplane
-    10: balloon,        // Lighter Than Air
-    11: obstacle,       // Parachute / Sky Diver — no good top-down silhouette
-    12: propSingle,     // Ultralight Vehicle
-    13: drone,          // UAV
-    17: groundVehicle,  // Surface Vehicle — Emergency
-    18: groundVehicle,  // Surface Vehicle — Service
-    19: obstacle,       // Point Obstacle
-    20: obstacle,       // Cluster Obstacle
-    21: obstacle,       // Line Obstacle
+    9: groundVehicle,   // Surface Vehicle — Emergency
+    10: groundVehicle,  // Surface Vehicle — Service
+    11: obstacle,       // Point Obstacle
+    12: obstacle,       // Cluster Obstacle
+    13: obstacle,       // Line Obstacle
+    17: glider,         // Glider or Sailplane
+    18: balloon,        // Lighter Than Air
+    19: obstacle,       // Parachute / Sky Diver — no good top-down silhouette
+    20: propSingle,     // Ultralight Vehicle
+    21: drone,          // UAV
+    25: propSingle,     // Light Airplane
+    26: propTwin,       // Small Airplane
+    27: jet,            // Large Airplane
+    28: jetHeavy,       // High Vortex Aircraft
+    29: jetHeavy,       // Heavy Airplane
+    30: jetPrivate,     // High Performance Aircraft
+    31: helicopter,     // Rotorcraft
 };
 
 function getMarkerIcon(emitterCategory) {
@@ -27,34 +29,28 @@ function getMarkerIcon(emitterCategory) {
 }
 
 // Categories whose icons are not top-down silhouettes and should not rotate with track.
-const nonRotatingCategories = new Set([10, 11, 19, 20, 21]);
+const nonRotatingCategories = new Set([18, 19, 11, 12, 13]);
 
 function shouldRotate(emitterCategory) {
     return !nonRotatingCategories.has(emitterCategory);
 }
 
 /* ADS-B emitter category labels keyed by the flattened emitter_category value
- * produced by the backend. Values 0..31 map directly to A0..D7 in order.
+ * produced by the backend. Values 0..31 map directly to D0..D7, C0..C7,
+ * B0..B7, A0..A7 in order because ADS-B type codes 1..4 correspond to
+ * category sets D..A.
  *
  * Public reference:
  * FAA AC 20-165B Appendix tables:
  * https://www.faa.gov/documentLibrary/media/Advisory_Circular/AC_20-165B.pdf */
 const emitterCategoryLabels = [
     'No Emitter Category',
-    'Light Airplane',
-    'Small Airplane',
-    'Large Airplane',
-    'High Vortex Aircraft',
-    'Heavy Airplane',
-    'High Performance Aircraft',
-    'Rotorcraft',
-    'No Emitter Category',
-    'Glider or sailplane',
-    'Lighter Than Air',
-    'Parachute / Sky Diver',
-    'Ultralight Vehicle',
-    'UAV',
-    'Space/Trans-atmospheric Vehicle',
+    'Reserved',
+    'Reserved',
+    'Reserved',
+    'Reserved',
+    'Reserved',
+    'Reserved',
     'Reserved',
     'No Emitter Category',
     'Surface Vehicle—Emergency Vehicle',
@@ -65,13 +61,21 @@ const emitterCategoryLabels = [
     'Reserved',
     'Reserved',
     'No Emitter Category',
+    'Glider or sailplane',
+    'Lighter Than Air',
+    'Parachute / Sky Diver',
+    'Ultralight Vehicle',
+    'UAV',
+    'Space/Trans-atmospheric Vehicle',
     'Reserved',
-    'Reserved',
-    'Reserved',
-    'Reserved',
-    'Reserved',
-    'Reserved',
-    'Reserved'
+    'No Emitter Category',
+    'Light Airplane',
+    'Small Airplane',
+    'Large Airplane',
+    'High Vortex Aircraft',
+    'Heavy Airplane',
+    'High Performance Aircraft',
+    'Rotorcraft'
 ];
 
 /**
