@@ -153,9 +153,12 @@ export function initPanel({ onClearSelection }) {
                         ${copyIcon}
                     </button>
                 </div>
-                <div class="info-panel__subtitle" data-field="category"></div>
+                <div class="info-panel__subtitle">
+                    <span class="info-panel__secondary-label">Emitter Category:</span>
+                    <span data-field="category"></span>
+                </div>
                 <div class="info-panel__secondary-row">
-                    <span class="info-panel__secondary-label">ICAO</span>
+                    <span class="info-panel__secondary-label">ICAO 24-bit Address:</span>
                     <span class="info-panel__secondary-value" data-field="icao"></span>
                     <button type="button" class="info-panel__copy-button"
                         data-copy-for="icao" aria-label="Copy value" title="Copy">
